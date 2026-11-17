@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Study Garden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="mast-top"><span>Field journal Nº 01</span><span>A garden that grows while you study</span><span id="mastDate"></span></div>
+    <div class="mast-main">
+      <div class="brand">Pomodoro<i>Garden</i>
+        <svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="28" rx="19" ry="16" fill="var(--tomato)" stroke="var(--ink)" stroke-width="2.5"/><ellipse cx="16" cy="22" rx="5" ry="2.6" fill="#fff" opacity=".35" transform="rotate(-25 16 22)"/><path d="M24 14 L16 7 L22 10 L24 3 L26 10 L32 7 Z" fill="var(--sage)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <nav class="tabs" aria-label="Sections">
+        <button type="button" data-view="cities" aria-current="page"><small>01</small>Cities</button>
+        <button type="button" data-view="garden"><small>02</small>Garden</button>
+        <button type="button" data-view="focus"><small>03</small>Focus</button>
+        <button type="button" data-view="journal"><small>04</small>Journal</button>
+        <button type="button" data-view="stats"><small>05</small>Stats</button>
+      </nav>
+      <div class="tools">
+        <button class="tbtn" id="soundBtn" type="button" aria-pressed="false">Sound off</button>
+        <button class="tbtn" id="mixBtn" type="button" aria-expanded="false" aria-controls="mixer">Ambience</button>
+        <button class="tbtn" id="pipBtn" type="button" aria-pressed="true">Pip on</button>
+        <button class="tbtn" id="themeBtn" type="button" aria-label="Switch between light and dark mode">Dark mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="banner" id="storeWarn" hidden role="alert"><span>Saving is blocked in this browser window (private mode or blocked site data). Your garden will disappear when you close this tab.</span></div>
+    <section id="cities" aria-labelledby="ch">
+      <div class="chead">
+        <h1 id="ch" tabindex="-1">Where shall we <em>plant</em> today?</h1>
+        <p class="hand">pick a destination. The foggy ones are still waiting for you.</p>
+      </div>
+      <div class="atlas" id="cgrid"></div>
+    </section>
+
+    <section id="garden" hidden aria-labelledby="gh">
+      <div class="g-head">
+        <div>
+          <p class="kicker">Your garden in <span id="gCoords"></span></p>
+          <h1 id="gh" tabindex="-1"></h1>
+          <p class="hand"><span id="gCountry"></span> · <span id="cityTag"></span></p>
+        </div>
+        <button class="btn ghost sm" id="changeCity" type="button">← Back to the atlas</button>
+      </div>
+      <div class="banner" id="demoBanner" hidden>
+        <span>This is an example garden so you can see how it grows. Your own sessions will be added to it.</span>
+        <button class="btn ghost sm" id="clearDemo" type="button">Clear the example</button>
+      </div>
+      <div class="toolbar">
+        <div class="kpis" id="kpis"></div>
+        <div class="segs"><div class="seg" id="skySeg" role="radiogroup" aria-label="Sky"></div><div class="seg season" id="seasonSeg" role="radiogroup" aria-label="Season"></div></div>
+      </div>
+      <div class="stage">
+        <canvas id="gCanvas" role="img" aria-label="Your garden" aria-describedby="recentList"></canvas>
+        <div class="tip" id="tip" hidden></div>
+      </div>
+      <div class="fig"><span class="hand">fig. 1: the garden so far. Hover a plant to read its tag.</span><span class="stagecount" id="stageCount"></span></div>
+      <div class="growkey" aria-label="Growth stages"><div><b>🌱</b>seedling</div><div><b>🌿</b>sprout</div><div><b>🪴</b>young</div><div><b>🌾</b>budding</div><div><b>🌼</b>blooming</div><div><b>🌻</b>flourishing</div><div><b>🌳</b>grown</div></div>
+      <p class="note" style="margin-top:.7rem">Every finished pomodoro waters the whole garden: each plant grows one stage, and the newest one starts as a seedling.</p>
+      <div class="cta"><button class="btn" id="plantBtn" type="button">Start a pomodoro here</button></div>
+      <div class="two">
+        <div class="panel"><h2>Field <i>checklist</i></h2><ul class="plain" id="unlocks"></ul></div>
+        <div class="panel"><h2>The <i>logbook</i></h2><ul class="plain" id="recentList"></ul></div>
+      </div>
+    </section>
+
+    <section id="focus" hidden aria-labelledby="fh">
+      <div class="f-grid">
+        <div class="f-win">
+          <div class="stage arch"><canvas id="fCanvas" role="img" aria-label="The plant you are growing"></canvas></div>
+          <p class="hand">every minute is a drop of water</p>
+        </div>
+        <div>
+          <div class="panel" id="setup">
+            <p class="kicker" id="todayPomo"></p>
+            <h2 id="fh" tabindex="-1">Start a <i>pomodoro</i></h2>
+            <p class="hand" id="focusCity"></p>
+            <fieldset style="margin-top:1.1rem"><legend>What are you studying?</legend>
+              <div class="seg" id="subjSeg"></div>
+              <div class="addrow">
+                <input type="text" id="newSubj" maxlength="24" placeholder="New subject" aria-label="New subject name">
+                <select id="newSpecies" aria-label="Plant for the new subject"></select>
+                <button class="btn ghost sm" id="addSubj" type="button">Add</button>
+              </div>
+            </fieldset>
+            <fieldset><legend>Choose a seed</legend>
+              <div class="seeds" id="seedSeg" role="radiogroup" aria-label="Seed to plant"></div>
+            </fieldset>
+            <fieldset><legend>How long is a pomodoro?</legend>
+              <div class="seg" id="durSeg"></div>
+              <p class="note" id="pomoNote" style="margin-top:.5rem"></p>
+              <div class="addrow"><label for="customMin" class="note">or custom focus minutes</label><input class="num" type="number" id="customMin" min="1" max="180" step="1" inputmode="numeric" placeholder="e.g. 35"></div>
+            </fieldset>
+            <label class="chk"><input type="checkbox" id="strict" checked> Wilt if I leave this tab for more than 15 seconds</label>
+            <button class="btn" id="startBtn" type="button">Plant the seed →</button>
+            <p class="status" id="setupStatus" role="status" aria-live="polite"></p>
+          </div>
+          <div class="panel run" id="running" hidden>
+            <p class="kicker" id="runSubj"></p>
+            <div class="plate" id="plate">
+              <svg viewBox="0 0 320 320" class="dial" aria-hidden="true">
+                <circle cx="160" cy="160" r="156" class="pl-bg"/>
+                <circle cx="160" cy="160" r="150" class="pl-ring"/>
+                <g id="ticks" class="ticks"></g>
+                <circle cx="160" cy="160" r="122" class="pl-track"/>
+                <path id="vine" class="vine" pathLength="100" d="M160 38 A122 122 0 1 1 159.9 38"/>
+                <g id="vleaves"></g>
+                <g id="bug"><g transform="translate(160 38) rotate(90)"><ellipse rx="7" ry="8.5" class="bug-b"/><circle cy="-9" r="3.6" class="bug-h"/><line y1="-8" y2="8" class="bug-l"/><circle cx="-2.8" cy="-2" r="1.4" fill="#1E211B"/><circle cx="2.8" cy="3" r="1.4" fill="#1E211B"/></g></g>
+                <g transform="translate(105 112) scale(.5)"><g class="tm">
+                  <defs><clipPath id="tmClip"><ellipse cx="110" cy="124" rx="98" ry="82"/></clipPath></defs>
+                  <ellipse cx="110" cy="124" rx="98" ry="82" class="tm-bg"/>
+                  <rect id="tmFill" x="0" y="206" width="220" height="0" fill="var(--tomato)" clip-path="url(#tmClip)"/>
+                  <ellipse cx="72" cy="86" rx="22" ry="11" fill="#fff" opacity=".3" transform="rotate(-25 72 86)"/>
+                  <ellipse cx="110" cy="124" rx="98" ry="82" class="tm-edge"/>
+                  <path d="M110 50 L88 28 L106 36 L110 14 L114 36 L132 28 Z" class="tm-leaf"/>
+                </g></g>
+              </svg>
+              <div class="burst" id="burst" aria-hidden="true"></div>
+              <p class="planted hand" id="planted" aria-hidden="true"></p>
+            </div>
+            <div class="clockrow"><b id="clock" role="timer">25:00</b><span id="runPct">0% grown</span></div>
+            <div class="dots" id="dots" aria-hidden="true"></div>
+            <p class="note" id="runNote"></p>
+            <div class="notecard" id="noteCard" hidden>
+              <p class="kicker">Field note · break time</p>
+              <label class="hand" for="noteText">What did you study, and how did it feel?</label>
+              <textarea id="noteText" maxlength="280" rows="3" placeholder="e.g. finished the regression exercises. Foggy at first, then it clicked."></textarea>
+              <div class="moods" id="moods" role="radiogroup" aria-label="How did it feel?"></div>
+              <div class="addrow"><button class="btn sm" id="noteSave" type="button">Save to journal</button><button class="btn ghost sm" id="noteSkip" type="button">Skip</button><span class="note" id="noteCount" aria-hidden="true"></span></div>
+            </div>
+            <div class="addrow"><button class="btn ghost" id="giveUp" type="button">Give up</button><button class="btn" id="skipBrk" type="button" hidden>Skip break</button><button class="btn ghost" id="endSes" type="button" hidden>End session</button></div>
+            <p class="status" id="runStatus" role="status" aria-live="polite"></p>
+          </div>
+          <div class="panel result" id="result" hidden>
+            <div class="big" id="resEm" aria-hidden="true"></div>
+            <h2 id="resTitle" tabindex="-1"></h2>
+            <p id="resText"></p>
+            <p id="resUnlock" class="hand"></p>
+            <div class="addrow" style="justify-content:center"><button class="btn" id="resGarden" type="button">See my garden</button><button class="btn ghost" id="resDaily" type="button">See today’s page</button><button class="btn ghost" id="resAgain" type="button">Start another</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="journal" hidden aria-labelledby="jh">
+      <div class="chead"><h1 id="jh" tabindex="-1">The <em>journal</em></h1><p class="hand">one honest line per pomodoro. future you will read it.</p></div>
+      <div class="j-grid">
+        <div class="panel jcal">
+          <div class="jcal-h"><button class="btn ghost sm" id="jPrev" type="button" aria-label="Previous month">←</button><h2 id="jMonth" aria-live="polite"></h2><button class="btn ghost sm" id="jNext" type="button" aria-label="Next month">→</button></div>
+          <div class="cal" id="jCal"></div>
+          <p class="note" id="jSummary" style="margin-top:.8rem"></p>
+          <div class="addrow"><button class="btn ghost sm" id="jDaily" type="button">Page for the day</button><button class="btn ghost sm" id="jAll" type="button" hidden>Show all days</button></div>
+        </div>
+        <div id="jEntries"></div>
+      </div>
+    </section>
+
+    <section id="stats" hidden aria-labelledby="sh">
+      <h1 class="sr" id="sh" tabindex="-1">Your stats</h1>
+      <div class="chead" style="margin-bottom:0"><h1 aria-hidden="true">The <em>ledger</em></h1><p class="hand">numbers don't lie. Neither does the tomato count.</p></div>
+      <div class="kgrid" id="kbig"></div>
+      <div class="two">
+        <div class="panel chart"><h2>Last <i>7 days</i></h2><div id="weekChart"></div></div>
+        <div class="panel"><h2>By <i>subject</i></h2><div class="bars" id="subjBars"></div></div>
+      </div>
+      <div class="panel" style="margin-top:2rem"><h2>The <i>passport</i></h2><div class="bars" id="cityBars"></div></div>
+      <div class="panel" style="margin-top:2rem"><h2>The stamp <i>album</i></h2><p class="note" id="albumNote"></p><div class="album" id="album"></div></div>
+      <div class="panel" style="margin-top:2rem"><h2><i>Milestones</i></h2><div class="ach" id="achs"></div></div>
+      <div class="cta"><button class="btn" id="postcardBtn" type="button">Make my weekly postcard</button></div>
+    </section>
+  </main>
+
+  <footer><span>Pomodoro Garden: a student project by Nour El Ghobri. Saved in this browser only. The garden you see first is an example until you clear it.</span><span class="foot-links"><button class="lnk" id="howBtn" type="button">How it works</button><button class="lnk" id="saveBtn" type="button">How saving works</button></span><span class="hand">made in Madrid, with tomatoes</span></footer>
+</div>
+
+<div class="arrive" id="arrive" hidden role="dialog" aria-modal="true" aria-labelledby="arCity">
+  <div class="arrive-in">
+    <div class="bigstamp" id="arFlag" aria-hidden="true"></div>
+    <p class="kicker">You have arrived in</p>
+    <h2 id="arCity"></h2>
+    <p class="kicker" id="arCoords"></p>
+    <p class="hand" id="arHello"></p>
+    <p class="n" id="arNote"></p>
+    <button class="btn" id="arBtn" type="button" data-city="">Plant my first seed here →</button>
+    <button class="go" id="arBack" type="button" style="color:#E6CC95;border-color:#E6CC95;align-self:center">Back to the atlas</button>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal-box">
+    <h3 id="mTitle">Your weekly postcard</h3>
+    <img id="mImg" alt="Postcard of your garden with your study hours, sessions and streak">
+    <p class="note">On a phone, press and hold the postcard to save it. On a computer, right-click it and choose Save image.</p>
+    <button class="btn" id="mClose" type="button">Close</button>
+  </div>
+</div>
+
+<button class="pip" id="pip" type="button" aria-label="Pip, your study companion. Press for a word of encouragement." data-season="summer">
+  <span class="pip-in"><svg viewBox="0 0 60 62" aria-hidden="true">
+    <g class="pl a"><path d="M17 47 L10 56"/></g><g class="pl b"><path d="M23 52 L20 60"/></g><g class="pl a"><path d="M43 47 L50 56"/></g><g class="pl b"><path d="M37 52 L40 60"/></g>
+    <path d="M7 35 A23 22 0 0 1 53 35 L53 43 Q53 53 30 53 Q7 53 7 43Z" fill="#C94A2B" stroke="#1E211B" stroke-width="2.5"/>
+    <path d="M30 14 V53" stroke="#1E211B" stroke-width="2"/>
+    <g fill="#1E211B"><circle cx="17" cy="37" r="3.2"/><circle cx="43" cy="37" r="3.2"/><circle cx="21" cy="46" r="2.4"/><circle cx="39" cy="46" r="2.4"/><circle cx="12" cy="44" r="1.8"/><circle cx="48" cy="44" r="1.8"/></g>
+    <path d="M24 8 Q21 1 15 2 M36 8 Q39 1 45 2" stroke="#2A2A22" fill="none" stroke-width="2" stroke-linecap="round"/><circle cx="15" cy="2.5" r="2" fill="#2A2A22"/><circle cx="45" cy="2.5" r="2" fill="#2A2A22"/>
+    <path d="M13 24 Q13 7 30 7 Q47 7 47 24 Q30 31 13 24Z" fill="#1E211B"/>
+    <ellipse cx="18.5" cy="23" rx="3" ry="2" fill="#F08A8A" opacity=".75"/><ellipse cx="41.5" cy="23" rx="3" ry="2" fill="#F08A8A" opacity=".75"/>
+    <circle cx="23.5" cy="17" r="5" fill="#fff"/><circle cx="36.5" cy="17" r="5" fill="#fff"/>
+    <circle class="pp" cx="24" cy="17.5" r="2.4" fill="#1E211B"/><circle class="pp" cx="36" cy="17.5" r="2.4" fill="#1E211B"/>
+    <path class="lid" d="M19 17 Q23.5 20.5 28 17 M32 17 Q36.5 20.5 41 17" stroke="#1E211B" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+    <path class="smile" d="M25 25 Q30 29 35 25" stroke="#F8F1DF" fill="none" stroke-width="1.6" stroke-linecap="round"/>
+    <g class="acc acc-w"><path d="M14 27 Q30 35 46 27 L46 32 Q30 40 14 32Z" fill="#8F2D18" stroke="#1E211B" stroke-width="1.4"/><path d="M40 34 L44 47 L37 48 L35 37Z" fill="#B5472A" stroke="#1E211B" stroke-width="1.2"/></g>
+    <g class="acc acc-a"><path d="M30 7 Q31 -4 40 -3 Q40 6 30 7Z" fill="#E3501F" stroke="#1E211B" stroke-width="1.2"/><path d="M31 6 L38 -1" stroke="#1E211B" stroke-width=".8"/></g>
+    <g class="acc acc-s" transform="translate(41 8)"><g fill="#F6A6BE" stroke="#1E211B" stroke-width=".8"><ellipse cx="0" cy="-3.4" rx="2.1" ry="2.8"/><ellipse cx="3.3" cy="-1" rx="2.1" ry="2.8" transform="rotate(72 3.3 -1)"/><ellipse cx="2" cy="2.9" rx="2.1" ry="2.8" transform="rotate(144 2 2.9)"/><ellipse cx="-2" cy="2.9" rx="2.1" ry="2.8" transform="rotate(216 -2 2.9)"/><ellipse cx="-3.3" cy="-1" rx="2.1" ry="2.8" transform="rotate(288 -3.3 -1)"/></g><circle r="1.8" fill="#F6D26B"/></g>
+    <g class="acc acc-m"><path d="M19 8 Q19 -3 30 -3 Q41 -3 41 8Z" fill="#EBD08F" stroke="#1E211B" stroke-width="1.2"/><ellipse cx="30" cy="8" rx="19" ry="3.6" fill="#E5C27A" stroke="#1E211B" stroke-width="1.2"/><path d="M19.5 5.5 Q30 8.5 40.5 5.5" stroke="#C94A2B" stroke-width="2" fill="none"/></g>
+    <text class="zz" x="46" y="10">z</text>
+  </svg></span>
+</button>
+<div class="pipsay" id="pipSay" aria-hidden="true"></div>
+<div class="toast" id="toast" aria-hidden="true"><span class="tsv" id="toastSv"></span><span><b id="toastT"></b><span id="toastS"></span></span></div>
+<div class="hnote" id="hnote" aria-hidden="true"></div>
+<div class="mixer" id="mixer" hidden role="dialog" aria-label="Ambient sounds">
+  <p class="kicker">Ambience</p>
+  <p class="note" id="mixNote" style="margin:.2rem 0 .5rem">Turn Sound on, then mix your own weather.</p>
+  <div id="mixRows"></div>
+  <div class="addrow"><button class="btn ghost sm" id="mixCity" type="button">Match this city</button><button class="btn ghost sm" id="mixOff" type="button">All quiet</button><button class="btn ghost sm" id="mixClose" type="button">Close</button></div>
+  <p class="note" style="margin-top:.6rem;font-size:.8rem">Sounds are made live in your browser. They are not recordings.</p>
+</div>
+
+<div class="welcome" id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="wTitle">
+  <div class="welcome-in">
+    <p class="kicker">Field journal Nº 01 · for first-time visitors</p>
+    <svg class="wh" viewBox="0 0 200 130" aria-hidden="true"><ellipse class="soil" cx="100" cy="118" rx="70" ry="10"/><ellipse class="seed" cx="100" cy="112" rx="6" ry="4"/><path class="stem" pathLength="60" d="M100 114 C100 90 98 70 100 46"/><path class="lf" d="M100 80 C112 66 130 68 136 76 C124 84 110 86 100 80Z"/><path class="lf b" d="M100 66 C88 52 70 54 64 62 C76 70 90 72 100 66Z"/><circle class="tom" cx="100" cy="36" r="15"/></svg>
+    <h2 id="wTitle">Pomodoro<i>Garden</i></h2>
+    <p class="lede">A garden that only grows while you study.</p>
+    <div class="wsteps">
+      <div class="wstep"><small>Step one</small><b>Choose a city</b><p>Eight destinations, each with its own plants, weather and landmarks. Foggy ones are waiting to be found.</p></div>
+      <div class="wstep"><small>Step two</small><b>Plant a seed</b><p>Start a pomodoro. The seed grows for as long as you stay focused. Wander off, and it wilts.</p></div>
+      <div class="wstep"><small>Step three</small><b>Keep a diary</b><p>After each one, write a line. Collect stamps, press your plants in the journal and watch the seasons turn.</p></div>
+    </div>
+    <p class="save">Everything is saved on this device, in this browser. There is a backup option at the bottom of every page.</p>
+    <button class="btn" id="wBegin" type="button">Begin the journey →</button>
+    <button class="go" id="wSkip" type="button">Skip the intro</button>
+  </div>
+</div>
+<div class="journey" id="journey" hidden role="status" aria-live="polite">
+  <div>
+    <p class="kicker" id="jyKick">Now travelling</p>
+    <h2 id="jyTitle"></h2>
+    <svg viewBox="0 0 400 190" aria-hidden="true"><path class="jp" id="jyPath" d="M60 140 Q200 -20 340 70"/><circle class="jd" id="jyA" cx="60" cy="140" r="6"/><circle class="jd" id="jyB" cx="340" cy="70" r="6"/><text id="jyTA" x="60" y="166" text-anchor="middle"></text><text id="jyTB" x="340" y="96" text-anchor="middle"></text><g id="jyPlane"><path d="M-15 0 L-3 -3.5 L-8 -13 L-3.5 -13 L5 -3.5 L14 -4.5 L17 0 L14 4.5 L5 3.5 L-3.5 13 L-8 13 L-3 3.5Z" fill="#F4EBD3" stroke="#1F3D2B" stroke-width="1"/></g></svg>
+    <p class="hand" id="jySub"></p>
+    <p class="skip">tap to skip</p>
+  </div>
+</div>
+<div class="modal" id="daily" hidden role="dialog" aria-modal="true" aria-labelledby="dTitle">
+  <div class="modal-box wide">
+    <p class="kicker" id="dKick"></p><h3 id="dTitle"></h3>
+    <div id="dBody"></div>
+    <div class="addrow"><button class="btn" id="dClose" type="button">Close</button><button class="btn ghost" id="dJournal" type="button">Open the journal</button></div>
+  </div>
+</div>
+<div class="modal" id="saveinfo" hidden role="dialog" aria-modal="true" aria-labelledby="siTitle">
+  <div class="modal-box wide savebox">
+    <h3 id="siTitle">How saving works</h3>
+    <p>Your garden, journal and stamps are kept in <b>this browser, on this device</b>. There is no account and nothing is sent anywhere.</p>
+    <p><b>Clearing your browser data, cookies or site data deletes your garden.</b> So does private or incognito browsing, and switching to another browser or device starts you from scratch.</p>
+    <h4>Back it up</h4>
+    <p class="note" id="siInfo"></p>
+    <div class="warnrow"><button class="btn sm" id="bkCopy" type="button">Copy a backup</button><button class="btn ghost sm" id="bkShow" type="button">Show backup text</button></div>
+    <textarea id="bkText" aria-label="Backup text" hidden></textarea>
+    <h4>Restore from a backup</h4>
+    <label class="sr" for="bkIn">Paste a backup here</label>
+    <textarea id="bkIn" placeholder="Paste a backup here"></textarea>
+    <div class="warnrow"><button class="btn ghost sm" id="bkRestore" type="button">Restore this backup</button><button class="btn ghost sm danger" id="bkReset" type="button">Erase everything</button></div>
+    <p class="status" id="siStatus" role="status" aria-live="polite"></p>
+    <div class="addrow"><button class="btn" id="siClose" type="button">Close</button></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
